@@ -10,7 +10,9 @@
     "test": "mocha",
     "tree": "src/binary-search-tree.js",
     "list": "src/remove-from-list.js",
-    "stack": "src/stack.js"
+    "stack": "src/stack.js",
+    "q": "src/queue.js",
+    "bloom": "src/bloom-filter.js"
   },
   "repository": {
     "type": "git",
