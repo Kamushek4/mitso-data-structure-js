@@ -108,3 +108,8 @@ module.exports = class BinarySearchTree {
     return current.data;
   }
 };
+
+
+
+
+const tree = new BinarySearchTree();
