@@ -1,57 +1,115 @@
 const { NotImplementedError } = require("../extensions/index.js");
 
 module.exports = class BloomFilter {
-
-  constructor(size) {
-    this.size = size
-    this.store = this.createStore(size)
+  /**
+   * @param {number} size
+   */
+  constructor(size = 100) {
+    this.size = size;
+    this.store = this.createStore(this.size);
   }
 
-
+  /**
+   * @param {string} item
+   */
   insert(item) {
-    for (const hash of this.getHashValues(item)) {
-      const position = hash % this.size;
-      this.store[position] = true;
-    }
+    const hashValues = this.getHashValues(item);
+    
+    hashValues.forEach(hash => {
+      this.store.setValue(hash);
+    });
   }
 
-
+  /**
+   * @param {string} item
+   * @return {boolean}
+   */
   mayContain(item) {
-    for (const hash of this.getHashValues(item)){
-      const position = hash % this.size;
-      if (this.store[position] === false) return false      
+    const hashValues = this.getHashValues(item);
+    
+    for (let i = 0; i < hashValues.length; i++) {
+      if (!this.store.getValue(hashValues[i])) {
+        return false;
+      }
     }
+    
     return true;
   }
 
+  /**
+   * @param {number} size
+   * @return {Object}
+   */
   createStore(size) {
-    return new Array(size).fill(false);
+    const storage = new Array(size).fill(false);
+    
+    return {
+      getValue(index) {
+        return storage[index];
+      },
+      
+      setValue(index) {
+        storage[index] = true;
+      }
+    };
   }
 
+  /**
+   * @param {string} item
+   * @return {number}
+   */
   hash1(item) {
-    let hash = 0
-    for (const char of item)  hash += char.charCodeAt(0)
-    return  Math.abs(hash)
+    let hash = 0;
+    
+    for (let i = 0; i < item.length; i++) {
+      hash = (hash << 5) + hash + item.charCodeAt(i);
+      hash = hash & hash;
+      hash = Math.abs(hash);
+    }
+    
+    return hash % this.size;
   }
 
-
+  /**
+   * @param {string} item
+   * @return {number}
+   */
   hash2(item) {
-    let hash = 4
-    for (const char of item)  hash += char.charCodeAt(0)*3
-    return  Math.abs(hash)
+    let hash = 5381;
+    
+    for (let i = 0; i < item.length; i++) {
+      hash = (hash << 5) + hash + item.charCodeAt(i);
+    }
+    
+    return Math.abs(hash) % this.size;
   }
 
-
+  /**
+   * @param {string} item
+   * @return {number}
+   */
   hash3(item) {
-    let hash = 7
-    for (const char of item)  hash += char.charCodeAt(0)*5
-    return  Math.abs(hash)
+    let hash = 0;
+    
+    for (let i = 0; i < item.length; i++) {
+      hash = (hash << 5) - hash;
+      hash += item.charCodeAt(i);
+      hash = hash & hash;
+    }
+    
+    return Math.abs(hash) % this.size;
   }
 
+  /**
+   *
+   * @param {string} item
+   * @return {number[]}
+   */
   getHashValues(item) {
-    return [this.hash1(item), this.hash2(item), this.hash3(item)]
+    return [
+      this.hash1(item),
+      this.hash2(item),
+      this.hash3(item)
+    ];
   }
 };
-
-
-
