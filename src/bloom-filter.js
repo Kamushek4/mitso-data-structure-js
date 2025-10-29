@@ -53,6 +53,5 @@ module.exports = class BloomFilter {
   }
 };
 
-const Bloom = new BloomFilter(16)
 
 

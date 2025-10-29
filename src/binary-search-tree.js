@@ -110,6 +110,3 @@ module.exports = class BinarySearchTree {
 };
 
 
-
-
-const tree = new BinarySearchTree();

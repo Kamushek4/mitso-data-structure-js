@@ -25,4 +25,3 @@ module.exports = class Queue {
   }
 }
 
-const new_queue = new Queue()
